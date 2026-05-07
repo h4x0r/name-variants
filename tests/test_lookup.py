@@ -47,6 +47,21 @@ def test_traditional_and_simplified_same_key():
     # 陳 (Traditional) should resolve to 陈 (Simplified) key
     # Direct lookup without opencc — Traditional char in index
     assert lookup_key("陈") is not None
+    assert lookup_key("陳") == lookup_key("陈")
+    assert lookup_key("劉") == lookup_key("刘")
+    assert lookup_key("許") == lookup_key("许")
+
+
+def test_traditional_chinese_resolves_to_simplified():
+    """Traditional forms must resolve to the Simplified canonical key."""
+    assert lookup_key("陳") == "陈"
+    assert lookup_key("劉") == "刘"
+    assert lookup_key("張") == "张"
+    assert lookup_key("楊") == "杨"
+    assert lookup_key("趙") == "赵"
+    assert lookup_key("吳") == "吴"
+    assert lookup_key("鄭") == "郑"
+    assert lookup_key("許") == "许"
 
 
 def test_xu_and_hui_same_key():
