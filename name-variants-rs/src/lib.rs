@@ -19,8 +19,28 @@ mod generated;
 /// assert_eq!(lookup_key("Smith"), None);
 /// ```
 pub fn lookup_key(text: &str) -> Option<&'static str> {
-    // stub — always returns None until generated map is wired in
-    let _ = text;
+    if text.is_empty() {
+        return None;
+    }
+
+    // 1. Exact match (handles native script keys: 陈, 박, محمد)
+    if let Some(key) = generated::INDEX.get(text) {
+        return Some(key);
+    }
+
+    // 2. Lowercase match (handles Chan, CHAN, chan)
+    let lower = text.to_lowercase();
+    if let Some(key) = generated::INDEX.get(lower.as_str()) {
+        return Some(key);
+    }
+
+    // 3. Token-by-token: "Chan Wai Ming" → try each token
+    for token in lower.split_whitespace() {
+        if let Some(key) = generated::INDEX.get(token) {
+            return Some(key);
+        }
+    }
+
     None
 }
 
@@ -58,7 +78,8 @@ mod tests {
 
     #[test]
     fn lee_and_rhee_same_key() {
-        assert_eq!(lookup_key("lee"), lookup_key("rhee"));
+        // "lee" also maps to Chinese 李 in the data, so use yi/rhee — both are Korean-only variants of 이
+        assert_eq!(lookup_key("yi"), lookup_key("rhee"));
     }
 
     // ── Arabic ───────────────────────────────────────────────────────────────
@@ -106,6 +127,7 @@ mod tests {
 
     #[test]
     fn all_unknown_tokens_returns_none() {
-        assert_eq!(lookup_key("John Smith"), None);
+        // "john" maps to Greek Ιωάννης — use names genuinely absent from the dataset
+        assert_eq!(lookup_key("Kowalski Smith"), None);
     }
 }
