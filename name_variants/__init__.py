@@ -48,26 +48,38 @@ ALL_TABLES: dict[str, dict[str, list[str]]] = {
 
 # Lazy-built inverted index: romanization (lowercase) → canonical key
 _INDEX: dict[str, str] | None = None
+# Lazy-built variants map: canonical key → variants list (last-write-wins, same as _INDEX)
+_VARIANTS: dict[str, list[str]] | None = None
 
 
-def _build_index() -> dict[str, str]:
+def _build_index() -> tuple[dict[str, str], dict[str, list[str]]]:
     index: dict[str, str] = {}
+    variants: dict[str, list[str]] = {}
     for table in ALL_TABLES.values():
-        for canonical, variants in table.items():
+        for canonical, variants_list in table.items():
             # The canonical key itself maps to itself
             index[canonical] = canonical
-            for variant in variants:
+            # Last-write-wins for both dicts (same iteration order)
+            variants[canonical] = variants_list
+            for variant in variants_list:
                 v = variant.lower().strip()
                 if v:
                     index[v] = canonical
-    return index
+    return index, variants
 
 
 def _get_index() -> dict[str, str]:
-    global _INDEX
+    global _INDEX, _VARIANTS
     if _INDEX is None:
-        _INDEX = _build_index()
+        _INDEX, _VARIANTS = _build_index()
     return _INDEX
+
+
+def _get_variants() -> dict[str, list[str]]:
+    global _INDEX, _VARIANTS
+    if _VARIANTS is None:
+        _INDEX, _VARIANTS = _build_index()
+    return _VARIANTS
 
 
 def lookup_key(text: str) -> str | None:
@@ -114,15 +126,15 @@ def lookup_all(text: str) -> tuple[str, list[str]] | None:
     Examples:
         lookup_all("Chan")   → ("陈", ["陳", "chen", "chan", "tan", ...])
         lookup_all("Smith")  → None
+        lookup_all("")       → None
     """
     key = lookup_key(text)
     if key is None:
         return None
-    for table in ALL_TABLES.values():
-        if key in table:
-            return key, table[key]
-    # Key found in index but not in any table — shouldn't happen
-    return key, []
+    variants = _get_variants().get(key)
+    if variants is None:
+        return key, []
+    return key, variants
 
 
 __all__ = ["lookup_key", "lookup_all", "ALL_TABLES"]

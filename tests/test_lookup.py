@@ -183,7 +183,9 @@ def test_lookup_all_returns_key_and_variants():
 
 
 def test_lookup_all_traditional_shows_in_variants():
-    key, variants = lookup_all("陈")
+    result = lookup_all("陈")
+    assert result is not None
+    key, variants = result
     assert key == "陈"
     assert "陳" in variants
 
