@@ -76,6 +76,22 @@ Two independent implementations, identical UX:
 [![Sponsor](https://img.shields.io/badge/sponsor-h4x0r-ea4aaa?logo=github-sponsors)](https://github.com/sponsors/h4x0r)
 ```
 
+## Script-Form Aliases in Output
+
+`nv lookup Chan` should show `陈  陳, chen, chan, tan, ...` — the Traditional form `陳` must appear alongside the romanizations.
+
+The fix is in the data, not the CLI: Traditional (and other script-form aliases) are added as **variants** inside the relevant table entries. For Chinese, each Simplified key gets its Traditional equivalent(s) prepended to the variants list:
+
+```python
+"陈": ["陳", "chen", "chan", "tan", "chin", "zen", "chern"],
+```
+
+This also makes `lookup_key("陳")` work directly — Traditional input resolves to the Simplified canonical key without needing opencc. The `test_all_romanizations_are_lowercase` test is unaffected because `"陳".lower() == "陳"` (CJK has no case).
+
+The same applies to Japanese (kyūjitai forms), Korean (Hanja), and Arabic (alternate Unicode encodings) where relevant.
+
+For the implementation plan, this is a data-layer task separate from the CLI task.
+
 ## Out of Scope
 
 - Language group labels on output (politically contested)
