@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ".[dev]"
+      - run: pytest tests/ -v
+
+  rust-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test --manifest-path name-variants-rs/Cargo.toml
+      - run: cargo test --doc --manifest-path name-variants-rs/Cargo.toml
+
+  codegen-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python codegen/gen_rust.py
+      - name: Fail if generated.rs changed
+        run: |
+          if ! git diff --exit-code name-variants-rs/src/generated.rs; then
+            echo "ERROR: name-variants-rs/src/generated.rs is out of sync."
+            echo "Run 'python codegen/gen_rust.py' and commit the result."
+            exit 1
+          fi
