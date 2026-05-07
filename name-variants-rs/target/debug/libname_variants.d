@@ -1,1 +1,0 @@
-/Users/4n6h4x0r/src/name-variants/name-variants-rs/target/debug/libname_variants.rlib: /Users/4n6h4x0r/src/name-variants/name-variants-rs/src/generated.rs /Users/4n6h4x0r/src/name-variants/name-variants-rs/src/lib.rs
