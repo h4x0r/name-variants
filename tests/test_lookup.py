@@ -1,6 +1,6 @@
-"""Tests for lookup_key() and ALL_TABLES completeness."""
+"""Tests for lookup_key(), lookup_all(), and ALL_TABLES completeness."""
 import pytest
-from name_variants import lookup_key, ALL_TABLES
+from name_variants import lookup_key, lookup_all, ALL_TABLES
 
 
 # ── Table completeness ────────────────────────────────────────────────────────
@@ -169,3 +169,31 @@ def test_park_in_full_name():
     key = lookup_key("Park Ji-sung")
     assert key is not None
     assert key == lookup_key("Bak")
+
+
+# ── lookup_all ────────────────────────────────────────────────────────────────
+
+def test_lookup_all_returns_key_and_variants():
+    result = lookup_all("Chan")
+    assert result is not None
+    key, variants = result
+    assert key == "陈"
+    assert "chen" in variants
+    assert "chan" in variants
+
+
+def test_lookup_all_traditional_shows_in_variants():
+    key, variants = lookup_all("陈")
+    assert key == "陈"
+    assert "陳" in variants
+
+
+def test_lookup_all_unknown_returns_none():
+    assert lookup_all("Smith") is None
+    assert lookup_all("") is None
+
+
+def test_lookup_all_multiword():
+    result = lookup_all("Chan Wai Ming")
+    assert result is not None
+    assert result[0] == "陈"
