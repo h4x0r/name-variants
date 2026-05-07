@@ -23,7 +23,7 @@ CHINESE_SURNAME_VARIANTS: dict[str, list[str]] = {
     "杨": ["楊", "yang", "yeung", "yeong", "yong", "young", "io"],
     "黄": ["黃", "huang", "wong", "ng", "oei", "uy", "wee", "way", "huong"],
     "赵": ["趙", "zhao", "chao", "chew", "chu", "chiu", "tio", "dzao"],
-    "吴": ["吳", "wu", "ng", "goh", "ngo", "woo", "ou", "gou"],
+    "吴": ["吳", "wu", "ng", "goh", "ngo", "woo", "ou"],
     "周": ["zhou", "chow", "jou", "chu", "chou", "tsou", "chau"],
     # ── 11-50 ────────────────────────────────────────────────────────────────
     "徐": ["xu", "hui", "tsui", "chui", "kho", "khoo", "zee"],

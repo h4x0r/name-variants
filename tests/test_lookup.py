@@ -62,6 +62,7 @@ def test_traditional_chinese_resolves_to_simplified():
     assert lookup_key("吳") == "吴"
     assert lookup_key("鄭") == "郑"
     assert lookup_key("許") == "许"
+    assert lookup_key("關") == "关"
 
 
 def test_xu_and_hui_same_key():
