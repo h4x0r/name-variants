@@ -13,7 +13,7 @@ mod generated;
 /// 3. Token-by-token (handles `"Chan Wai Ming"` → checks `chan`)
 ///
 /// # Examples
-/// ```no_run
+/// ```
 /// use name_variants::lookup_key;
 /// assert_eq!(lookup_key("Chan"), Some("陈"));
 /// assert_eq!(lookup_key("Smith"), None);
