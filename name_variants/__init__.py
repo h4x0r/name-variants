@@ -107,4 +107,22 @@ def lookup_key(text: str) -> str | None:
     return None
 
 
-__all__ = ["lookup_key", "ALL_TABLES"]
+def lookup_all(text: str) -> tuple[str, list[str]] | None:
+    """
+    Return (canonical_key, all_variants) for a name, or None if unknown.
+
+    Examples:
+        lookup_all("Chan")   → ("陈", ["陳", "chen", "chan", "tan", ...])
+        lookup_all("Smith")  → None
+    """
+    key = lookup_key(text)
+    if key is None:
+        return None
+    for table in ALL_TABLES.values():
+        if key in table:
+            return key, table[key]
+    # Key found in index but not in any table — shouldn't happen
+    return key, []
+
+
+__all__ = ["lookup_key", "lookup_all", "ALL_TABLES"]
